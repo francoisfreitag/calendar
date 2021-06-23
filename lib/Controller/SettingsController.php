@@ -91,6 +91,8 @@ class SettingsController extends Controller {
 				return $this->setDefaultReminder($value);
 			case 'showTasks':
 				return $this->setShowTasks($value);
+			case 'birthdayCalendarAlarm':
+				return $this->setBirthdayCalendarAlarm($value);
 			default:
 				return new JSONResponse([], Http::STATUS_BAD_REQUEST);
 		}
@@ -331,6 +333,28 @@ class SettingsController extends Controller {
 				$this->userId,
 				$this->appName,
 				'defaultReminder',
+				$value
+			);
+		} catch (\Exception $e) {
+			return new JSONResponse([], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
+
+		return new JSONResponse();
+	}
+
+	/**
+	 * Create birthday calendar alarms for user
+	 *
+	 * @param string $value 'yes' or 'no'
+	 * @return JSONResponse
+	 */
+	private function setBirthdayCalendarAlarm(string $value):JSONResponse {
+		$value = $value === 'yes' ? 'yes' : 'no';
+		try {
+			$this->config->setUserValue(
+				$this->userId,
+				$this->appName,
+				'birthdayCalendarAlarm',
 				$value
 			);
 		} catch (\Exception $e) {

@@ -32,6 +32,7 @@ const state = {
 	firstRun: null,
 	talkEnabled: false,
 	// user-defined calendar settings
+	birthdayCalendarAlarm: null,
 	eventLimit: null,
 	showTasks: null,
 	showWeekends: null,
@@ -46,6 +47,15 @@ const state = {
 }
 
 const mutations = {
+
+	/**
+	 * Updates the user's setting for birthday calendar alarms
+	 *
+	 * @param {Object} state The Vuex state
+	 */
+	toggleBirthdayCalendarAlarm(state) {
+		state.birthdayCalendarAlarm = !state.birthdayCalendarAlarm
+	},
 
 	/**
 	 * Updates the user's setting for event limit
@@ -131,6 +141,7 @@ const mutations = {
 	 * @param {Object} state The Vuex state
 	 * @param {Object} data The destructuring object
 	 * @param {String} data.appVersion The version of the Nextcloud app
+	 * @param {Boolean} data.birthdayCalendarAlarm Whether or not to create alarms for the birthday calendar
 	 * @param {Boolean} data.eventLimit Whether or not to limit number of visible events in grid view
 	 * @param {Boolean} data.firstRun Whether or not this is the first run
 	 * @param {Boolean} data.showWeekNumbers Whether or not to show week numbers
@@ -143,10 +154,11 @@ const mutations = {
 	 * @param {Boolean} data.tasksEnabled Whether ot not the tasks app is enabled
 	 * @param {String} data.timezone The timezone to view the calendar in. Either an Olsen timezone or "automatic"
 	 */
-	loadSettingsFromServer(state, { appVersion, eventLimit, firstRun, showWeekNumbers, showTasks, showWeekends, skipPopover, slotDuration, defaultReminder, talkEnabled, tasksEnabled, timezone }) {
+	loadSettingsFromServer(state, { appVersion, birthdayCalendarAlarm, eventLimit, firstRun, showWeekNumbers, showTasks, showWeekends, skipPopover, slotDuration, defaultReminder, talkEnabled, tasksEnabled, timezone }) {
 		logInfo(`
 Initial settings:
 	- AppVersion: ${appVersion}
+	- BirthdayCalendarAlarm: ${birthdayCalendarAlarm}
 	- EventLimit: ${eventLimit}
 	- FirstRun: ${firstRun}
 	- ShowWeekNumbers: ${showWeekNumbers}
@@ -161,6 +173,7 @@ Initial settings:
 `)
 
 		state.appVersion = appVersion
+		state.birthdayCalendarAlarm = birthdayCalendarAlarm
 		state.eventLimit = eventLimit
 		state.firstRun = firstRun
 		state.showWeekNumbers = showWeekNumbers
@@ -223,6 +236,22 @@ const actions = {
 			const calendar = mapDavCollectionToCalendar(davCalendar)
 			commit('addCalendar', { calendar })
 		}
+	},
+
+	/**
+	 * Updates the user's setting for birthday calendar alarms creation
+	 *
+	 * @param {Object} vuex The Vuex destructuring object
+	 * @param {Object} vuex.state The Vuex state
+	 * @param {Function} vuex.commit The Vuex commit Function
+	 * @returns {Promise<void>}
+	 */
+	async toggleBirthdayCalendarAlarm({ state, commit }) {
+		const newState = !state.birthdayCalendarAlarm
+		const value = newState ? 'yes' : 'no'
+
+		await setConfig('birthdayCalendarAlarm', value)
+		commit('toggleBirthdayCalendarAlarm')
 	},
 
 	/**

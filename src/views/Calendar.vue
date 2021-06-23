@@ -192,6 +192,7 @@ export default {
 	async beforeMount() {
 		this.$store.commit('loadSettingsFromServer', {
 			appVersion: loadState('calendar', 'app_version'),
+			birthdayCalendarAlarm: loadState('calendar', 'birthday_calendar_alarm'),
 			eventLimit: loadState('calendar', 'event_limit'),
 			firstRun: loadState('calendar', 'first_run'),
 			showWeekends: loadState('calendar', 'show_weekends'),

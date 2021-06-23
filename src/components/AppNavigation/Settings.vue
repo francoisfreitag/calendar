@@ -32,6 +32,13 @@
 			</ActionCheckbox>
 			<ActionCheckbox
 				class="settings-fieldset-interior-item"
+				:checked="birthdayCalendarAlarm"
+				:disabled="!birthdayCalendar"
+				@update:checked="toggleBirthdayAlarms">
+				{{ $t('calendar', 'Enable birthday calendar alarms') }}
+			</ActionCheckbox>
+			<ActionCheckbox
+				class="settings-fieldset-interior-item"
 				:checked="showTasks"
 				:disabled="savingTasks"
 				@update:checked="toggleTasksEnabled">
@@ -160,6 +167,7 @@ export default {
 	data: function() {
 		return {
 			savingBirthdayCalendar: false,
+			savingBirthdayAlarm: false,
 			savingEventLimit: false,
 			savingTasks: false,
 			savingPopover: false,
@@ -175,6 +183,7 @@ export default {
 			birthdayCalendar: 'hasBirthdayCalendar',
 		}),
 		...mapState({
+			birthdayCalendarAlarm: state => state.settings.birthdayCalendarAlarm,
 			eventLimit: state => state.settings.eventLimit,
 			showPopover: state => !state.settings.skipPopover,
 			showTasks: state => state.settings.showTasks,
@@ -186,7 +195,7 @@ export default {
 			locale: (state) => state.settings.momentLocale,
 		}),
 		isBirthdayCalendarDisabled() {
-			return this.savingBirthdayCalendar || this.loadingCalendars
+			return this.savingBirthdayCalendar || this.savingBirthdayAlarm || this.loadingCalendars
 		},
 		files() {
 			return this.$store.state.importFiles.importFiles
@@ -255,6 +264,17 @@ export default {
 				console.error(error)
 				showError(this.$t('calendar', 'New setting was not saved successfully.'))
 				this.savingBirthdayCalendar = false
+			}
+		},
+		async toggleBirthdayAlarms() {
+			this.savingBirthdayAlarm = true
+			try {
+				await this.$store.dispatch('toggleBirthdayCalendarAlarm')
+			} catch (error) {
+				console.error(error)
+				showError(this.$t('calendar', 'New setting was not saved successfully.'))
+			} finally {
+				this.savingBirthdayAlarm = false
 			}
 		},
 		async toggleEventLimitEnabled() {

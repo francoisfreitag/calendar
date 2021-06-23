@@ -423,6 +423,30 @@ class SettingsControllerTest extends TestCase {
 		$this->assertEquals(500, $actual->getStatus());
 	}
 
+	public function testSetCreateBirthdayCalendarAlarmEnable():void {
+		$this->config->expects($this->once())
+			->method('setUserValue')
+			->with('user123', $this->appName, 'birthdayCalendarAlarm', 'yes');
+
+		$actual = $this->controller->setConfig('birthdayCalendarAlarm', 'yes');
+
+		$this->assertInstanceOf('OCP\AppFramework\Http\JSONResponse', $actual);
+		$this->assertSame([], $actual->getData());
+		$this->assertSame(200, $actual->getStatus());
+	}
+
+	public function testSetCreateBirthdayCalendarAlarmDisable():void {
+		$this->config->expects($this->once())
+			->method('setUserValue')
+			->with('user123', $this->appName, 'birthdayCalendarAlarm', 'no');
+
+		$actual = $this->controller->setConfig('birthdayCalendarAlarm', 'no');
+
+		$this->assertInstanceOf('OCP\AppFramework\Http\JSONResponse', $actual);
+		$this->assertSame([], $actual->getData());
+		$this->assertSame(200, $actual->getStatus());
+	}
+
 	public function testSetNotExistingConfig():void {
 		$actual = $this->controller->setConfig('foo', 'bar');
 

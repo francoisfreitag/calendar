@@ -87,6 +87,8 @@ class ViewController extends Controller {
 	 * @return TemplateResponse
 	 */
 	public function index():TemplateResponse {
+		# Default to groupware settings.
+		$defaultBirthdayCalendarAlarm = $this->config->getAppValue('dav', 'birthdayCalendarAlarm', 'no');
 		$defaultEventLimit = $this->config->getAppValue($this->appName, 'eventLimit', 'yes');
 		$defaultInitialView = $this->config->getAppValue($this->appName, 'currentView', 'dayGridMonth');
 		$defaultShowWeekends = $this->config->getAppValue($this->appName, 'showWeekends', 'yes');
@@ -98,6 +100,7 @@ class ViewController extends Controller {
 		$defaultShowTasks = $this->config->getAppValue($this->appName, 'showTasks', 'yes');
 
 		$appVersion = $this->config->getAppValue($this->appName, 'installed_version', null);
+		$birthdayCalendarAlarm = $this->config->getUserValue($this->userId, $this->appName, 'birthdayCalendarAlarm', $defaultBirthdayCalendarAlarm) === 'yes';
 		$eventLimit = $this->config->getUserValue($this->userId, $this->appName, 'eventLimit', $defaultEventLimit) === 'yes';
 		$firstRun = $this->config->getUserValue($this->userId, $this->appName, 'firstRun', 'yes') === 'yes';
 		$initialView = $this->getView($this->config->getUserValue($this->userId, $this->appName, 'currentView', $defaultInitialView));
@@ -113,6 +116,7 @@ class ViewController extends Controller {
 		$tasksEnabled = $this->appManager->isEnabledForUser('tasks');
 
 		$this->initialStateService->provideInitialState($this->appName, 'app_version', $appVersion);
+		$this->initialStateService->provideInitialState($this->appName, 'birthday_calendar_alarm', $birthdayCalendarAlarm);
 		$this->initialStateService->provideInitialState($this->appName, 'event_limit', $eventLimit);
 		$this->initialStateService->provideInitialState($this->appName, 'first_run', $firstRun);
 		$this->initialStateService->provideInitialState($this->appName, 'initial_view', $initialView);
